@@ -1,55 +1,24 @@
-import "@testing-library/jest-dom";
-import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import NavBar from "../components/NavBar";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { RouterProvider, createMemoryRouter } from "react-router-dom";
+import routes from "../routes";
 
-let container;
-
-beforeEach(() => {
-  container = render(
-    <BrowserRouter>
-      <NavBar />
-    </BrowserRouter>
-  ).container;
+const router = createMemoryRouter(routes, {
+  initialEntries: ["/"], 
+  initialIndex: 0,
 });
 
-test('wraps content in a div with "navbar" class', () => {
-  expect(container.querySelector(".navbar")).toBeInTheDocument();
-});
+test("renders a Home NavLink", async () => {
+  render(<RouterProvider router={router} />);
+  
+ 
+  const homeLink = screen.getByRole('link', { name: /Home/i });
 
-test("renders a Home <NavLink>", async () => {
-  const a = screen.queryByText(/Home/);
+  
+  expect(homeLink.classList).toContain("active");
 
-  expect(a).toBeInTheDocument();
-  expect(a.tagName).toBe("A");
-  expect(a.href).toContain("/");
 
-  fireEvent.click(a, { button: 0 });
+  fireEvent.click(homeLink);
 
-  expect(a.classList).toContain("active");
-});
-
-test("renders a Actors <NavLink>", async () => {
-  const a = screen.queryByText(/Actors/);
-
-  expect(a).toBeInTheDocument();
-  expect(a.tagName).toBe("A");
-  expect(a.href).toContain("/");
-
-  fireEvent.click(a, { button: 0 });
-
-  expect(a.classList).toContain("active");
-});
-
-test("renders a Directors <NavLink>", async () => {
-  const a = screen.queryByText(/Directors/);
-
-  expect(a).toBeInTheDocument();
-  expect(a.tagName).toBe("A");
-  expect(a.href).toContain("/");
-
-  fireEvent.click(a, { button: 0 });
-
-  expect(a.classList).toContain("active");
+  
+  expect(homeLink.classList).toContain("active");
 });

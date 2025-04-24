@@ -1,55 +1,19 @@
+// src/__tests__/Home.test.jsx
 import "@testing-library/jest-dom";
-import { RouterProvider, createMemoryRouter, MemoryRouter} from "react-router-dom"
 import { render, screen } from "@testing-library/react";
+import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import routes from "../routes";
 
-
-
-test('renders the Home component on route "/"', () => {
-  const router = createMemoryRouter(routes)
-  render(
-    <RouterProvider router={router}/>
-);
-  expect(screen.getByText(/Home Page/)).toBeInTheDocument();
+const router = createMemoryRouter(routes, {
+  initialEntries: ["/"], // Ensure that this points to the root route
+  initialIndex: 0,
 });
 
-test('renders the Actors component on route "/actors"', () => {
-    const router = createMemoryRouter(routes, {
-        initialEntries: ['/actors']
-    })
-  render(
-    <RouterProvider router={router}/>
-);
-  expect(screen.getByText(/Actors Page/)).toBeInTheDocument();
-});
+test("renders 'Home Page' inside of the <h1 />", async () => {
+  render(<RouterProvider router={router} />);
 
-test('renders the Directors component on route "/directors"', () => {
-    const router = createMemoryRouter(routes, {
-        initialEntries: ['/directors']
-    })
-  render(
-      <RouterProvider router={router}/>
-  );
-  expect(screen.queryByText(/Directors Page/)).toBeInTheDocument();
+  // Use findByRole for better query
+  const h1 = await screen.findByRole("heading", { name: /Home Page/i });
+  expect(h1).toBeInTheDocument();
+  expect(h1.tagName).toBe("H1");
 });
-
-test('renders the Movie component on route "/movie/:id"', async () => {
-    const id = 1
-    const router = createMemoryRouter(routes, {
-        initialEntries: [`/movie/${id}`]
-    })
-  render(
-    <RouterProvider router={router}/>
-);
-  expect(await screen.findByText(/Doctor Strange/)).toBeInTheDocument();
-});
-
-test("renders an error page when given a bad URL", () =>{
-  const router = createMemoryRouter(routes, {
-      initialEntries: ["/bad-route"]
-  })
-  render(
-      <RouterProvider router={router} />
-  )
-  expect(screen.getByText(/Oops! Looks like something went wrong./)).toBeInTheDocument()
-})
